@@ -1,7 +1,7 @@
 import requests,os
 os.system('cls')
 os.system('clear')
-num=input(f'[+] Number : ')
+num=input(f'[+] Number:')
 if int(len(num)) == 10:
  num=num.split('0')[1]
 else:
