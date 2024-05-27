@@ -1,0 +1,34 @@
+import requests,os
+os.system('cls')
+os.system('clear')
+num=input(f'[+] Number : ')
+if int(len(num)) == 10:
+ num=num.split('0')[1]
+else:
+ num=num
+data=f'msisdn=213{num}&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&scope=smsotp'
+res=requests.post('https://apim.djezzy.dz/oauth2/registration',data=data,headers={"Content-Type": "application/x-www-form-urlencoded","Content-Length":str(len(data)),"Host": "apim.djezzy.dz","Connection": "Keep-Alive","Accept-Encoding": "gzip","User-Agent": "Djezzy/2.6.6","Accept": "*/*"}).text
+if 'the confirmation code has been sent successfully' in res:
+ otp=input(f'[+] OTP : ')
+else:
+ exit(f'[×] OTP Send Error')
+data2=f'otp={otp}&mobileNumber=213{num}&scope=openid&client_id=6E6CwTkp8H1CyQxraPmcEJPQ7xka&client_secret=MVpXHW_ImuMsxKIwrJpoVVMHjRsa&grant_type=mobile'
+res2=requests.post('https://apim.djezzy.dz/oauth2/token',data=data2,headers={"Content-Type": "application/x-www-form-urlencoded","Content-Length":str(len(data2)),"Host": "apim.djezzy.dz","Connection": "Keep-Alive","Accept-Encoding": "gzip","User-Agent": "Djezzy/2.6.6","Accept": "*/*"}).json()
+try:
+ token=res2['access_token']
+except:
+ exit('[×] Wrong OTP')
+json={"data":{"id":"GIFTWALKWIN","type":"products","meta":{"services":{"steps":10025,"code":"GIFTWALKWIN2GO","id":"WALKWIN"}}}}
+while True:
+ res=requests.post('https://apim.djezzy.dz/djezzy-api/api/v1/subscribers/213(yournumber)/subscription-product?include=',json=json,headers={"Authorization": f"Bearer {token}","Content-Type": "application/json; charset\u003dutf-8","Content-Length":str(len(json)),"Host": "apim.djezzy.dz","Connection": "Keep-Alive","Accept-Encoding": "gzip","User-Agent": "Djezzy/2.6.6","Accept": "*/*"}).text
+ if '"UNAUTHORIZED"' in res:
+  print(f'[×] Auth Error')
+ elif 'successfully done' in res:
+  print(f'[√] Successful Get 2GO Offer')
+  exit()
+ elif '<head><title>429 Too Many Requests</title></head>' in res:
+  print(f'[×] Attempts Error')
+ elif '<h1>An error occurred.</h1>' in res:
+  print(f'[×] Spam Error')
+ else:
+  print(res)
